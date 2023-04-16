@@ -40,10 +40,11 @@ const Select = () => {
 }
 const Item = ({ item, onCheck }) => {
   const toggleCheck = e => onCheck(item.id, e.target.checked)
+  const isDone = item.done ? "mx-3 item-done" : "mx-3"
   return (
     <li className="list-group-item">
-      <input className="form-check-input" type="checkbox" aria-label="..." checked={item.done} onChange={toggleCheck} />
-      <span className="mx-3">{item.content}</span>
+      <input id={item.id} className="form-check-input" type="checkbox" aria-label="..." checked={item.done} onChange={toggleCheck} />
+      <label htmlFor={item.id}><span className={isDone}>{item.content}</span></label>
     </li>
   )
 }
