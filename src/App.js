@@ -1,47 +1,57 @@
 import { useState } from "react";
-import "./App.css";
+import './App.css';
 
-function Header({ title }) {
-  return (<h1>{title}</h1>)
+function Header() {
+  return(<h1>Les librairies Front</h1>)
 }
-function Component({ title, index, link, onClick, isSelected }) {
+function Component({ title, link, isSelected}) {
+  return(
+    <li className={isSelected ? "component blue" : "component"}>
+      <a href={link} target="_blank" rel="nonopener noreferrer">{title}</a>
+    </li>
+  )
+}
 
-  return (
-    <div className={isSelected ? "component green": "component"}>
-      <p><a href={link} target="_blank" rel="nonopener noreferrer">{title}</a></p>
-      <button onClick={() => onClick(title, index)}>click me !</button>
-    </div>)
+function Form ({ onChange, onSubmit }) {
+  return(
+  <form onSubmit={onSubmit} className="flex space-between">
+    <input type="text" onChange={onChange}  placeholder="title" name="title" />
+    <input type="text" onChange={onChange}  placeholder="link"  name="link" />
+    <button type="submit">add</button>
+  </form>)
 }
 
 function App() {
   const libraries = [
-    { title: "React", link: "https://reactjs.org/" },
-    { title: "Angular", link: "https://angular.io/" },
-    { title: "Vue", link: "https://vuejs.org/" },
-    { title: "Bootstrap", link: "https://getbbotstrap.com/" },
+    {title: "React", link: "https://reactjs.org/"}, 
+    {title: "Angular", link: "https://angular.io/"}, 
+    {title:"Vue", link: "https://vuejs.org/"}, 
+    {title:"Bootstrap", link: "https://getbootstrap.com/"}
   ];
-  const [index, setIndex] = useState(0)
-  const [title, setTitle] = useState("React")
-  const handleOnClick = (value, index) => {
-    setTitle(value)
-    setIndex(index)
+
+  const [input, setInput] = useState(null);
+  const [items, setItems] = useState(libraries)
+  const handleOnChange = e => setInput({... input, [e.target.name]: e.target.value})
+  const handleOnSubmit = e => {
+    e.preventDefault()
+    // setItems
   }
   return (
     <div className="App">
-      <header className="App-header">
-        <Header title={title} />
-        {libraries.map((lib, i) => {
-          return (
-            <Component
-              isSelected={index === i}
-              key={lib.link}
-              index={i}
-              title={lib.title}
-              link={lib.link}
-              onClick={handleOnClick} />
-              )
-        })}
-      </header>
+        <Header />
+        <Form onChange={handleOnChange} onSubmit={handleOnSubmit}/>
+        <ul className="list">
+          {items.map((lib, i) => {
+            return(
+                    <Component 
+                      key={lib.link}
+                      title={lib.title}
+                      index={i}
+                      link={lib.link}
+                    />
+                )
+            })}
+        </ul>
     </div>
   );
 }
