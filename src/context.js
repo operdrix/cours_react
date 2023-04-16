@@ -1,17 +1,17 @@
-import { createContext, useReducer } from "react"
+import { createContext, useReducer } from "react";
 
-const Context = createContext()
-const { Provider, Consumer } = Context
+const Context = createContext();
+const { Provider, Consumer } = Context;
+
+const todos = [
+  { id: 1, content: "pay bills", done: true },
+  { id: 2, content: "learn React", done: false },
+];
 
 const initialState = {
-  items: [
-    { id: 1, content: "pay bills", done: true },
-    { id: 2, content: "learn React", done: false },
-  ],
-  all: [
-    { id: 1, content: "pay bills", done: true },
-    { id: 2, content: "learn React", done: false },
-  ],
+  items: todos,
+  all: todos,
+  options: ["All", "Completed"],
   input: null,
 };
 
@@ -21,7 +21,7 @@ function reducer(state, action) {
       return {
         ...state,
         items: [...state.items, action.payload.item],
-        all: [...state.all, action.payload.item],
+        all: [...state.items, action.payload.item],
         input: null,
       };
     case "change":
@@ -30,24 +30,37 @@ function reducer(state, action) {
         input: action.payload.value,
       };
     case "check":
-      const updated = state.items.map((item) => (item.id === action.payload.id ? { ...item, done: action.payload.bool } : item));
+      const updated = state.items.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, done: action.payload.bool }
+          : item
+      );
       return {
         ...state,
         items: updated,
         all: updated,
       };
     case "select":
-      const filtered = state.items.filter((item) => item.done);
+      const filtered = state.items.filter((item) => !!item.done);
       return {
         ...state,
         items: action.payload.option === "Completed" ? filtered : state.all,
       };
     default:
-      return state;
+      throw new Error();
   }
 }
 
 const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  return <Provider value={{}}>{children}</Provider>
-}
+  return <Provider value={{ state, dispatch }}>{children}</Provider>;
+};
+
+export const AppConsumer = ({ children }) => {
+  return <Consumer>{(value) => children(value)}</Consumer>;
+};
+export const withContext = (Component) => (props) => {
+  return <Consumer>{(value) => <Component {...value} {...props} />}</Consumer>;
+};
+
+export default AppProvider;
