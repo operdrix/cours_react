@@ -1,23 +1,30 @@
 import { useEffect, useState } from "react";
 import './App.css';
 
-// les règles des hooks
+const Result = ({ result }) => <h1 className="result">{ result }</h1>
+
+const Counter = ({ count, onClick}) => {
+  return (
+    <>
+      <p>You clicked {count} times</p>
+      <button onClick={() => onClick(count => count + 1)}>click</button>
+      <button onClick={() => onClick(() => count = 0)}>reset</button>
+    </>
+  )
+}
 
 function App() {
-const [count, setCount] = useState(0);
-  const reset = () => {
-    
-  }
-  useEffect(() => {
-      setCount(0)
-    }, [])
+  const [count1, setCount1] = useState(0);
+  const [count2, setCount2] = useState(0);
+  const [result, setResult] = useState(0);
+  useEffect(() => setResult(count1 + count2), [count1, count2])
+
   return (
     <div className="App">
       <header className="App-header">
-        <h1 className="result">Counter</h1>
-        <p>You clicked {count} times</p>
-        <button onClick={() => setCount(count => count + 1)}>click</button>
-        <button onClick={reset}>reset</button>
+        <Result result={result} />
+        <Counter count={count1} onClick={setCount1} />
+        <Counter count={count2} onClick={setCount2} />
       </header>
     </div>
   );
