@@ -1,0 +1,25 @@
+.App {
+    border: 5px solid orange;
+}
+.App-link {
+  border: 3px solid blue;
+  display: inline-block;
+  padding: 0.8rem;
+  margin: 0.1rem;
+  width: 80%;
+}
+.App h1 {
+  border: 3px solid pink;
+}
+
+
+.item {
+  border: 1px solid red;
+  padding: 1rem;
+  list-style-type: none
+}
+
+.list a {
+  color: green;
+  text-decoration: none;
+}
