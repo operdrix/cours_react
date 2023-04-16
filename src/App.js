@@ -1,6 +1,28 @@
-import { useState, useMemo, useRef, forwardRef } from "react";
+import { useState, useMemo, useRef, forwardRef, useReducer } from "react";
 import { v4 as uuid } from "uuid";
 import "./App.css";
+
+const initialState = {
+  items: [
+    { id: uuid(), content: "pay bills", done: true },
+    { id: uuid(), content: "learn React", done: false },
+  ],
+  all: [
+    { id: uuid(), content: "pay bills", done: true },
+    { id: uuid(), content: "learn React", done: false },
+  ],
+  input: null,
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "submit":
+      return {
+        ...state,
+        items: [...state.items, action.payload.item],
+      };
+  }
+}
 
 const Container = ({ children, title }) => {
   return (
@@ -65,6 +87,7 @@ const List = ({ items, onCheck }) => {
 };
 
 function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
   const ref = useRef();
   const [input, setInput] = useState(null);
   const [items, setItems] = useState([
