@@ -1,5 +1,44 @@
 .App {
   text-align: center;
+  border: 5px solid orange;
+  padding: 0.5rem;
+}
+
+.App h1 {
+  border: 3px solid pink;
+}
+
+.list {
+  border: 3px solid blue;
+  padding: 2rem;
+}
+
+.item {
+  border: 1px solid red;
+  padding: 1rem;
+  list-style-type: none;
+}
+
+.list a {
+  color: green;
+  text-decoration: none;
+}
+.component {
+  border: 2px solid purple;
+  padding: 0.2rem;
+  list-style-type: none;
+}
+
+.component.green {
+  border: 2px solid green;
+  padding: 0.2rem;
+  list-style-type: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
 .App-header {
@@ -8,15 +47,6 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
 }
-
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-
 
 .App-link {
   color: #61dafb;
