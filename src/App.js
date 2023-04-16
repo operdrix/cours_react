@@ -1,8 +1,7 @@
 import { useRef, useMemo, forwardRef } from "react";
-import { withContext } from "./context"
-import { v4 as uuid} from "uuid";
+import { useAppContext } from "./context"
+import { v4 as uuid } from "uuid";
 import "./App.css";
-
 
 const Container = ({ children, title }) => {
   return (
@@ -21,82 +20,80 @@ const Container = ({ children, title }) => {
   );
 };
 
-const Form = forwardRef(({ onChange, onSubmit }, ref) => {
+function Form() {
+  const ref = useRef(null)
+  const { state, dispatch } = useAppContext()
+  const handleOnChange = e => dispatch({ type: "change", payload: { value: e.target.value } })
+  const handleOnSubmit = e => {
+    e.preventDefault()
+    if (isValid) {
+      dispatch({ type: "submit", payload: { item: { id: uuid(), content: state.input, done: false } } })
+      ref.current.value = null;
+    }
+  }
+  const isValid = useMemo(() => !!state.input, [state.input])
+
   return (
-    <form className="input-group mb-3" onSubmit={onSubmit}>
+    <form className="input-group mb-3" onSubmit={handleOnSubmit}>
       <input
         ref={ref}
         type="text"
         className="form-control form-control-lg mx-0"
         placeholder="Add new..."
         style={{ height: "max-content" }}
-        onChange={onChange}
+        onChange={handleOnChange}
       />
       <button type="submit" className="btn btn-info">
         Add
       </button>
     </form>
   )
-})
+}
 
-function Select({ onSelect }) {
+function Select() {
+  const { dispatch } = useAppContext()
   const options = ["All", "Completed"]
-  const select = e => onSelect(e.target.value)
+  const handleOnSelect = option => dispatch({ type: "select", payload: { option } })
   return (
     <div className="d-flex justify-content-end align-items-center my-3 ">
-      <select className="select form-select form-control form-control-sm" onChange={select}>
-        {options.map(option => <option value={option}>{option}</option>)}
+      <select className="select form-select form-control form-control-sm" onChange={handleOnSelect}>
+        {options.map(option => <option key={option} value={option}>{option}</option>)}
       </select>
     </div>
   );
 }
 
-function Item({ id, content, done, onCheck }) {
-  const toggleCheck = e => onCheck(id, e.target.checked)
+function Item({ id, content, done }) {
+  const { dispatch } = useAppContext()
+  const handleOnCheck = e => dispatch({ type: "check", payload: { id, bool: e.target.checked } })
   const isDone = done ? "mx-3 item-done" : "mx-3"
   return (
     <li className="list-group-item">
-      <input className="form-check-input" type="checkbox" aria-label="..." checked={done} onChange={toggleCheck}/>
+      <input className="form-check-input" type="checkbox" aria-label="..." checked={done} onChange={handleOnCheck} />
       <span className={isDone}>{content}</span>
     </li>
   );
 }
-function List({ items, onCheck }) {
+
+function List() {
+  const { state } = useAppContext()
   return (
     <ul className="list-group">
-      {items.map((item) => (
-        <Item key={item.id} {...item} onCheck={onCheck}/>
+      {state.items.map((item) => (
+        <Item key={item.id} {...item} />
       ))}
     </ul>
   );
 }
-function App({ state, dispatch }) {
-  const ref = useRef()
-  const handleOnChange = e =>  dispatch({type: "change", payload: { value: e.target.value}})
-  const handleOnSubmit = e => {
-    e.preventDefault()
-    if (isValid) { 
-      dispatch({type: "submit", payload: {item : {id: uuid(), content: state.input, done: false}}})
-      ref.current.value = null;
-    }
-  }
-  const handleOnCheck = (id, bool) => {
-    dispatch({type: "check", payload: {id , bool }})
-  }
+function App() {
 
-  const handleOnSelect = option => {
-    dispatch({type: "select", payload: { option }})
-
-  }
-
-  const isValid = useMemo(() => !!state.input, [state.input])
   return (
     <Container title="Gestionnaire de tâches">
-      <Form ref={ref} onChange={handleOnChange} onSubmit={handleOnSubmit}/>
-      <Select onSelect={handleOnSelect}/>
-      <List items={state.items} onCheck={handleOnCheck}/>
+      <Form />
+      <Select />
+      <List />
     </Container>
   );
 }
 
-export default withContext(App);
+export default App;

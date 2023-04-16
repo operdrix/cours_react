@@ -1,4 +1,4 @@
-import { createContext, useReducer } from "react";
+import { createContext, useReducer, useContext } from "react";
 
 const Context = createContext();
 const { Provider, Consumer } = Context;
@@ -63,4 +63,7 @@ export const withContext = (Component) => (props) => {
   return <Consumer>{(value) => <Component {...value} {...props} />}</Consumer>;
 };
 
+export const useAppContext = () => {
+  return useContext(Context);
+}
 export default AppProvider;
