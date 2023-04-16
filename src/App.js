@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useRef, forwardRef } from "react";
 import {v4 as uuid} from "uuid"
 import './App.css';
 
@@ -18,14 +18,14 @@ const Container = ({ children, title }) => {
     </div>)
 }
 
-const Form = ({ onChange, onSubmit }) => {
+const Form = forwardRef(({ onChange, onSubmit }, ref) => {
   return (
     <form className="input-group mb-3" onSubmit={onSubmit}>
-      <input type="text" className="form-control form-control-lg mx-0" placeholder="Add new..." style={{ height: "max-content" }} onChange={onChange} />
+      <input ref={ref} type="text" className="form-control form-control-lg mx-0" placeholder="Add new..." style={{ height: "max-content" }} onChange={onChange} />
       <button type="submit" className="btn btn-info">Ajouter</button>
     </form>
   )
-}
+})
 const Select = () => {
   return (
     <div className="d-flex justify-content-end align-items-center my-3 ">
@@ -57,6 +57,7 @@ const List = ({ items, onCheck }) => {
 }
 
 function App() {
+  const ref = useRef()
   const [input, setInput] = useState(null)
   const [items, setItems] = useState([{ id: uuid(), content: "pay bills", done: true }, { id: uuid(), content: "learn React", done: false }])
   const [all, setAll] = useState(items)
@@ -73,7 +74,7 @@ function App() {
       }, ...items
     ])
     setInput(null)
-
+    ref.current.value = null
   }
   const handleOnCheck = (id, bool) => {
     const updated = items.map(item => item.id === id ? { ...item, done: bool } : item)
@@ -83,7 +84,7 @@ function App() {
   
   return (
     <Container title="Gestionnaire de tâches">
-      <Form onChange={handleOnChange} onSubmit={handleOnSubmit} />
+      <Form ref={ref} onChange={handleOnChange} onSubmit={handleOnSubmit} />
       <Select />
       <List items={items} onCheck={handleOnCheck} />
     </Container>);
