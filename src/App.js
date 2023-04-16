@@ -4,12 +4,12 @@ import "./App.css";
 
 const initialState = {
   items: [
-    { id: uuid(), content: "pay bills", done: true },
-    { id: uuid(), content: "learn React", done: false },
+    { id: 1, content: "pay bills", done: true },
+    { id: 2, content: "learn React", done: false },
   ],
   all: [
-    { id: uuid(), content: "pay bills", done: true },
-    { id: uuid(), content: "learn React", done: false },
+    { id: 1, content: "pay bills", done: true },
+    { id: 2, content: "learn React", done: false },
   ],
   input: null,
 };
@@ -20,6 +20,26 @@ function reducer(state, action) {
       return {
         ...state,
         items: [...state.items, action.payload.item],
+        all: [...state.all, action.payload.item],
+        input: null,
+      };
+    case "change":
+      return {
+        ...state,
+        input: action.payload.value,
+      };
+    case "check":
+      const updated = state.items.map((item) => (item.id === action.payload.id ? { ...item, done: action.payload.bool } : item));
+      return {
+        ...state,
+        items: updated,
+        all: updated,
+      };
+    case "select":
+      const filtered = state.items.filter((item) => item.done);
+      return {
+        ...state,
+        items: action.payload.option === "Completed" ? filtered : state.all,
       };
   }
 }
@@ -52,7 +72,7 @@ const Form = forwardRef(({ onChange, onSubmit }, ref) => {
   );
 });
 const Select = ({ onSelect }) => {
-  const options = ["All", "Completed", "Active", "Has due date"];
+  const options = ["All", "Completed"];
   const select = (e) => onSelect(e.target.value);
   return (
     <div className="d-flex justify-content-end align-items-center my-3 ">
@@ -89,36 +109,32 @@ const List = ({ items, onCheck }) => {
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const ref = useRef();
-  const [input, setInput] = useState(null);
   const [items, setItems] = useState([
     { id: uuid(), content: "pay bills", done: true },
     { id: uuid(), content: "learn React", done: false },
   ]);
   const [all, setAll] = useState(items);
-  const handleOnChange = (e) => setInput(e.target.value);
+
+  const handleOnChange = (e) => dispatch({ type: "change", payload: { value: e.target.value } });
   const handleOnSubmit = (e) => {
     e.preventDefault();
     if (isValid) {
-      setItems([{ id: uuid(), content: input, done: false }, ...items]);
-      setInput(null);
+      dispatch({ type: "submit", payload: { item: { id: uuid(), content: state.input, done: false } } });
       ref.current.value = null;
     }
   };
   const handleOnCheck = (id, bool) => {
-    const updated = items.map((item) => (item.id === id ? { ...item, done: bool } : item));
-    setItems(updated);
-    setAll(updated);
+    dispatch({ type: "check", payload: { id, bool } });
   };
   const handleOnSelect = (option) => {
-    const filtered = all.filter((item) => item.done);
-    setItems(option === "Completed" ? filtered : all);
+    dispatch({ type: "select", payload: { option } });
   };
-  const isValid = useMemo(() => !!input, [input]);
+  const isValid = useMemo(() => !!state.input, [state.input]);
   return (
     <Container title="Gestionnaire de tâches">
       <Form ref={ref} onChange={handleOnChange} onSubmit={handleOnSubmit} />
       <Select onSelect={handleOnSelect} />
-      <List items={items} onCheck={handleOnCheck} />
+      <List items={state.items} onCheck={handleOnCheck} />
     </Container>
   );
 }
