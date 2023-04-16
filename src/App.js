@@ -29,11 +29,12 @@ const Form = forwardRef(({ onChange, onSubmit }, ref) => {
     </form>
   );
 });
-const Select = () => {
+const Select = ({ onSelect }) => {
   const options = ["All", "Completed", "Active", "Has due date"];
+  const select = (e) => onSelect(e.target.value);
   return (
     <div className="d-flex justify-content-end align-items-center my-3 ">
-      <select className="select form-select form-control form-control-sm">
+      <select onChange={select} className="select form-select form-control form-control-sm">
         {options.map((option) => (
           <option value={option}>{option}</option>
         ))}
@@ -86,7 +87,7 @@ function App() {
     setAll(updated);
   };
   const handleOnSelect = (option) => {
-    const filtered = all.filter((item) => !item.done);
+    const filtered = all.filter((item) => item.done);
     setItems(option === "Completed" ? filtered : all);
   };
   const isValid = useMemo(() => !!input, [input]);
