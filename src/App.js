@@ -38,25 +38,27 @@ const Select = () => {
     </div>
   )
 }
-const Item = ({ item }) => {
+const Item = ({ item, onCheck }) => {
+  const toggleCheck = e => onCheck(item.id, e.target.checked)
   return (
     <li className="list-group-item">
-      <input className="form-check-input" type="checkbox" aria-label="..." />
+      <input className="form-check-input" type="checkbox" aria-label="..." checked={item.done} onChange={toggleCheck} />
       <span className="mx-3">{item.content}</span>
     </li>
   )
 }
-const List = ({ items }) => {
+const List = ({ items, onCheck }) => {
   return (
     <ul className="list-group">
-      {items.map(item => <Item key={item.id} item={item} />)}
+      {items.map(item => <Item key={item.id} item={item} onCheck={onCheck} />)}
     </ul>
   )
 }
 
 function App() {
   const [input, setInput] = useState(null)
-  const [items, setItems] = useState([{ id: 1, content: "pay bills", done: false }, { id: 2, content: "learn React", done: false }])
+  const [items, setItems] = useState([{ id: uuid(), content: "pay bills", done: true }, { id: uuid(), content: "learn React", done: false }])
+  const [all, setAll] = useState(items)
 
   const handleOnChange = e => setInput(e.target.value)
   const handleOnSubmit = e => {
@@ -72,11 +74,17 @@ function App() {
     setInput(null)
 
   }
+  const handleOnCheck = (id, bool) => {
+    const updated = items.map(item => item.id === id ? { ...item, done: bool } : item)
+    setItems(updated)
+    setAll(updated)
+  }
+  
   return (
     <Container title="Gestionnaire de tâches">
       <Form onChange={handleOnChange} onSubmit={handleOnSubmit} />
       <Select />
-      <List items={items} />
+      <List items={items} onCheck={handleOnCheck} />
     </Container>);
 }
 
