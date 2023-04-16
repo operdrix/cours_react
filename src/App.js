@@ -1,24 +1,23 @@
-import { useState, useEffect } from "react";
-import "./App.css";
+import { useEffect, useState } from "react";
+import './App.css';
 
-const Title = ({ content }) => <h1 id="title">{content}</h1>
-const Component = ({ title, onClick }) => <button onClick={() => onClick(title)}>Learn {title}</button>
+// les règles des hooks
 
 function App() {
-  const [title, setTitle] = useState("React");
-  const handleOnClick = (lib) => setTitle(lib)
-
+const [count, setCount] = useState(0);
+  const reset = () => {
+    
+  }
   useEffect(() => {
-    document.title = `Learn ${title}`;
-  }, [title])
-
+      setCount(0)
+    }, [])
   return (
     <div className="App">
       <header className="App-header">
-        <Title content={title} />
-        <Component onClick={handleOnClick} title="React" />
-        <Component onClick={handleOnClick} title="Angular" />
-        <Component onClick={handleOnClick} title="Vue" />
+        <h1 className="result">Counter</h1>
+        <p>You clicked {count} times</p>
+        <button onClick={() => setCount(count => count + 1)}>click</button>
+        <button onClick={reset}>reset</button>
       </header>
     </div>
   );
